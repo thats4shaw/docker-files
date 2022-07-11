@@ -26,9 +26,16 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       -
-        name: Build and push
+        name: Build and push - latest
         uses: docker/build-push-action@v2
         with:
           context: ./silverstripe-php-7.4
           push: true
           tags: thats4shaw/silverstripe-deploy-node:latest
+      -
+        name: Build and push - develop
+        uses: docker/build-push-action@v2
+        with:
+          context: ./silverstripe-php-8.0
+          push: true
+          tags: thats4shaw/silverstripe-deploy-node:develop
