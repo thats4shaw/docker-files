@@ -35,7 +35,7 @@ jobs:
       - if: ${{ matrix.latest }}
         name: Populate Latest Tag
         run: |
-          echo "docker_tags=${{ env.docker_tags }},brettt89/silverstripe-web:latest" >> $GITHUB_ENV
+          echo "docker_tags=${{ env.docker_tags }},thats4shaw/silverstripe-deploy-node:latest" >> $GITHUB_ENV
 
       - name: Build and push
         uses: docker/build-push-action@v3
