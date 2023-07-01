@@ -1,34 +1,45 @@
 name: Docker Image CI
-
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.0', '8.1']
+        include:
+            - latest: true
+              php: 8.1
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
-      -
-        name: Login to DockerHub
+
+      - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-      -
-        name: Build and push - latest
-        uses: docker/build-push-action@v2
+
+      - name: Populate Default Tag
+        run: |
+          echo "docker_tags=thats4shaw/silverstripe-deploy-node:${{ matrix.php }}" >> $GITHUB_ENV
+
+      - if: ${{ matrix.latest }}
+        name: Populate Latest Tag
+        run: |
+          echo "docker_tags=${{ env.docker_tags }},brettt89/silverstripe-web:latest" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
         with:
-          context: ./silverstripe-php-8.1
+          context: ./silverstripe-php-${{ matrix.php }}
           push: true
-          tags: thats4shaw/silverstripe-deploy-node:latest
+          tags: ${{ env.docker_tags }}
